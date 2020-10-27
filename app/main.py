@@ -31,12 +31,15 @@ def get_characters():
                 "created",
                 "edited",
                 "url",
+                "skin_color",
+                "hair_color",
+                "eye_color",
+                "birth_year",
             ]
         }
         for item in ret["results"]
     ]
-    films = requests.get("https://swapi.dev/api/films/").json()
-    films = {film["episode_id"]: film for film in films["results"]}
+    films = get_films_dict()
     starships = get_starships()
     starships_dict = get_starships_dict(starships)
 
@@ -52,7 +55,6 @@ def get_characters():
             char["mass"] = float(char["mass"])
         if char["height"] != "unknown":
             char["height"] = float(char["height"])
-
         films_list = []
         for film in char["films"]:
             episode_id = int(film.split("/")[-2])
@@ -80,12 +82,18 @@ def get_characters():
     return render_template("pagination.html", char_list=ret)
 
 
+def get_films_dict():
+    films = requests.get("https://swapi.dev/api/films/").json()
+    films = {film["episode_id"]: {"title": film["title"]} for film in films["results"]}
+    return films
+
+
 def get_starships_dict(starships):
 
     starships_clean = {}
     for starship in starships:
         starship_id = int(starship["url"].split("/")[-2])
-        starships_clean[starship_id] = starship
+        starships_clean[starship_id] = {"name": starship["name"]}
     return starships_clean
 
 
@@ -94,7 +102,7 @@ def get_planets_dict(planets):
     planets_clean = {}
     for planet in planets:
         planet_id = int(planet["url"].split("/")[-2])
-        planets_clean[planet_id] = planet
+        planets_clean[planet_id] = {"name": planet["name"]}
     return planets_clean
 
 
@@ -103,7 +111,7 @@ def get_vehicles_dict(vehicles):
     vehicles_clean = {}
     for vehicle in vehicles:
         vehicle_id = int(vehicle["url"].split("/")[-2])
-        vehicles_clean[vehicle_id] = vehicle
+        vehicles_clean[vehicle_id] = {"name": vehicle["name"]}
     return vehicles_clean
 
 
@@ -127,6 +135,7 @@ def filter_by():
         clean_to_sort, key=lambda x: x[char_attribute], reverse=reverse
     )
     char_list["results"] += unknow_list
+
     return render_template("pagination.html", char_list=char_list)
 
 
