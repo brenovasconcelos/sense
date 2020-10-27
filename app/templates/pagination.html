@@ -1,0 +1,110 @@
+<!doctype html>
+<html>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<li><a class="btn btn-primary btn-lg btn-block" href="{{ url_for('hello') }}">INICIO</a></li>
+
+<li><a class="btn btn-primary btn-lg btn-block" href="{{ url_for('get_characters') }}">RESETAR FILTROS</a></li>
+
+<table class="table table-striped">
+
+    <!-- table header -->
+    {% if char_list.results %}
+    <tr >
+       {% for key in char_list.results[0] %}
+       {% if key in ['name', 'gender', 'height', 'mass'] %}
+       <th > <a href="{{ url_for('filter_by', char_list=char_list, char_attribute=key) }}"> {{ key }} </a> </th>
+       {% else %}
+       <th >{{ key }} </th>
+       {% endif %}
+       {% endfor %}
+    </tr>
+    {% endif %}
+    <!-- table rows -->
+    {% for char in char_list.results %}
+    <tr>
+       {% for value in char.values() %}
+       <td> {{ value }} </td>
+       {% endfor %}
+    </tr>
+    {% endfor %}
+
+  </table>
+
+
+  <div class="panel-group">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" href="#collapse1">Films</a>
+        </h4>
+      </div>
+      <div id="collapse1" class="panel-collapse collapse">
+        {% for film in char_list.all_films %}
+        <div class="panel-body"><a href="{{ url_for('film_filter', char_list=char_list, film_filter=char_list.all_films[film]['title']) }}">{{ char_list.all_films[film]['title'] }}</a></div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="panel-group">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" href="#collapse2">Startships</a>
+        </h4>
+      </div>
+      <div id="collapse2" class="panel-collapse collapse">
+        {% for startship in char_list.all_starships %}
+        <div class="panel-body"><a href="{{ url_for('starship_filter', char_list=char_list, starship_filter=char_list.all_starships[startship]['name']) }}">{{ char_list.all_starships[startship]['name'] }}</a></div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="panel-group">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" href="#collapse3">Vehicles</a>
+        </h4>
+      </div>
+      <div id="collapse3" class="panel-collapse collapse">
+        {% for vehicle in char_list.all_vehicles %}
+        <div class="panel-body"><a href="{{ url_for('vehicle_filter', char_list=char_list, vehicle_filter=char_list.all_vehicles[vehicle]['name']) }}">{{ char_list.all_vehicles[vehicle]['name'] }}</a></div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="panel-group">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" href="#collapse4">Planets</a>
+        </h4>
+      </div>
+      <div id="collapse4" class="panel-collapse collapse">
+        {% for planet in char_list.all_planets %}
+        <div class="panel-body"><a href="{{ url_for('planets_filter', char_list=char_list, planets_filter=char_list.all_planets[planet]['name']) }}">{{ char_list.all_planets[planet]['name'] }}</a></div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+<ul class="pagination">
+    {% if char_list.previous %}
+    <li><a class="btn btn-default" href="{{ url_for('get_characters') }}">Start</a></li>
+    <li><a class="btn btn-default" href="{{ url_for('get_characters', page=char_list.previous) }}">Previous</a></li>
+    {% endif %}
+    {% if char_list.next %}
+    <li><a class="btn btn-default" href="{{ url_for('get_characters', page=char_list.next) }}">Next</a></li>
+    {% endif %}
+  </ul>
+
+</html>
